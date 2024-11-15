@@ -4,4 +4,6 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+derivative = "2.2.0"
 iced = { version = "0.13.1", features = ["advanced"] }
+uuid = { version = "1.11.0", features = ["fast-rng", "v4"] }
