@@ -33,43 +33,15 @@
       fileset = srcSet;
     };
 
-    # for non cross compiling, dev/test builds
-    # buildsystem -> hostsystem == x86_64-linux -> x86_64-linux
-    nativeAttrs = {
-      src = src;
-      LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath [pkgs.libz];
-      buildInputs = with pkgs; [
-        vulkan-loader
-        wayland
-        wayland-protocols
-        libxkbcommon
-        makeWrapper
-        pkg-config
-        # gtk-layer-shell
-        glib
-        gtk3
-        libz
-        zlib
-      ];
-    };
-
     nativeRuntime = with pkgs; [
-      alsa-lib
-      alsa-lib.dev
-      udev
-      udev.dev
       libGL
-      vulkan-loader
       wayland
       libxkbcommon
-      pkg-config
-      glib
-      gtk3
     ];
-    nativeLD_LIBRARY_PATH = pkgs.lib.makeLibraryPath nativeRuntime;
+    LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath nativeRuntime;
 
     car = pkgs.writeScriptBin "car" ''
-      LD_LIBRARY_PATH=${nativeLD_LIBRARY_PATH} cargo $@
+      LD_LIBRARY_PATH=${LD_LIBRARY_PATH} cargo $@
     '';
     printVersion = pkgs.writeScriptBin "echover" ''
       echo tags: $(git tag --points-at HEAD)
@@ -85,19 +57,10 @@
       REV = self.rev or "dirty";
       buildInputs = with pkgs; [
         car
-        rustfmt
-
         cargo
         rust-analyzer
         rustfmt
-
-        pkg-config
-        glib
-        gtk3
-
         printVersion
-        texliveSmall
-        pandoc
       ];
     };
 
