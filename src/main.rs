@@ -3,6 +3,7 @@ use iced::{
     widget::{button, column, container, text},
     Element,
     Length::Fill,
+    Theme,
 };
 
 #[derive(Default)]
@@ -22,6 +23,9 @@ impl Counter {
             Message::Increment => self.value += 1,
             Message::Decrement => self.value -= 1,
         }
+    }
+    fn theme(&self) -> Theme {
+        Theme::Nightfly
     }
     fn view(&self) -> Element<Message> {
         container(
@@ -54,5 +58,7 @@ fn it_counts_properly() {
 }
 
 fn main() -> iced::Result {
-    iced::run("Lets count", Counter::update, Counter::view)
+    iced::application("Lets count", Counter::update, Counter::view)
+        .theme(Counter::theme)
+        .run()
 }
