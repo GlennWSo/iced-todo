@@ -43,6 +43,9 @@
     car = pkgs.writeScriptBin "car" ''
       LD_LIBRARY_PATH=${LD_LIBRARY_PATH} cargo $@
     '';
+    bac = pkgs.writeScriptBin "bac" ''
+      LD_LIBRARY_PATH=${LD_LIBRARY_PATH} bacon $@
+    '';
     printVersion = pkgs.writeScriptBin "echover" ''
       echo tags: $(git tag --points-at HEAD)
       git remote -v | head -n1
@@ -57,7 +60,9 @@
       REV = self.rev or "dirty";
       buildInputs = with pkgs; [
         car
+        bac
         cargo
+        bacon
         rust-analyzer
         rustfmt
         printVersion

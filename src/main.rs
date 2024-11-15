@@ -1,4 +1,9 @@
-use iced::widget::{button, column, text, Column};
+use iced::{
+    border::width,
+    widget::{button, column, container, text},
+    Element,
+    Length::Fill,
+};
 
 #[derive(Default)]
 struct Counter {
@@ -18,12 +23,22 @@ impl Counter {
             Message::Decrement => self.value -= 1,
         }
     }
-    fn view(&self) -> Column<Message> {
-        column![
-            button("+").on_press(Message::Increment),
-            text(self.value),
-            button("-").on_press(Message::Decrement),
-        ]
+    fn view(&self) -> Element<Message> {
+        container(
+            column![
+                button(text("+").center().width(Fill)).on_press(Message::Increment),
+                // .height(Fill),
+                text(self.value).center().width(Fill),
+                button(text("-").center().width(Fill))
+                    .on_press(Message::Decrement)
+                    .clip(true)
+            ]
+            .spacing(11)
+            .width(100),
+        )
+        .center_x(Fill)
+        .center_y(Fill)
+        .into()
     }
 }
 
