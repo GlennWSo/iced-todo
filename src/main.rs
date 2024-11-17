@@ -32,19 +32,19 @@ impl Task {
 
 #[derive(Default)]
 struct State {
+    theme: Theme,
     input_value: String,
     todo: HashMap<Uuid, Task>,
-    finnished: Vec<Task>,
+    finnished: HashMap<Uuid, Task>,
 }
 
 #[derive(Clone, Debug)]
 enum Message {
     Input(String),
     CreateTask,
-    TaskCompleted(Uuid),
-    TaskRedo(usize),
-    TodoDeleted(usize),
-    FinnishedDeleted(usize),
+    CompleteTask(Uuid),
+    RedoTask(Uuid),
+    DeleteTask(Uuid),
 }
 
 impl State {
@@ -55,11 +55,19 @@ impl State {
         ];
         let todos = column(self.todo.values().map(|task| {
             let tx: Element<Message> = button(task.description.as_str())
-                .on_press(Message::TaskCompleted(task.id))
+                .on_press(Message::CompleteTask(task.id))
                 .into();
             tx
         }));
-        let main_box = column![new_todo, todos,];
+        let finnished = column(self.finnished.values().map(|task| {
+            let tx: Element<Message> = button(task.description.as_str())
+                .style(|theme, status| button::secondary(theme, status))
+                .on_press(Message::RedoTask(task.id))
+                .into();
+            tx
+        }));
+
+        let main_box = column![new_todo, text("Do"), todos, text("Done"), finnished].spacing(10);
         main_box.into()
     }
     fn update(&mut self, m: Message) {
@@ -70,10 +78,19 @@ impl State {
                 let task = Task::new(self.input_value.clone());
                 self.todo.insert(task.id, task);
             }
-            Message::TaskCompleted(id) => todo!(),
-            Message::TaskRedo(_) => todo!(),
-            Message::TodoDeleted(_) => todo!(),
-            Message::FinnishedDeleted(_) => todo!(),
+            Message::CompleteTask(id) => {
+                let fin = self.todo.remove(&id);
+                if let Some(task) = fin {
+                    self.finnished.insert(id, task);
+                };
+            }
+            Message::RedoTask(id) => {
+                let fin = self.finnished.remove(&id);
+                if let Some(task) = fin {
+                    self.todo.insert(id, task);
+                };
+            }
+            Message::DeleteTask(_) => todo!(),
         }
     }
 }
