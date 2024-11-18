@@ -51,7 +51,9 @@ impl State {
     fn view(&self) -> Element<Message> {
         let new_todo = row![
             button("add todo").on_press(Message::CreateTask),
-            text_input("Do this", &self.input_value).on_input(|input| Message::Input(input))
+            text_input("Do this", &self.input_value)
+                .on_input(|input| Message::Input(input))
+                .on_submit(Message::CreateTask)
         ];
         let todos = column(self.todo.values().map(|task| {
             let tx: Element<Message> = button(task.description.as_str())
@@ -75,7 +77,9 @@ impl State {
             Message::Input(txt) => self.input_value = txt,
             Message::CreateTask => {
                 // self.todo.push(Task::new(self.input_value.clone()));
-                let task = Task::new(self.input_value.clone());
+                let desc = self.input_value.clone();
+                self.input_value.clear();
+                let task = Task::new(desc);
                 self.todo.insert(task.id, task);
             }
             Message::CompleteTask(id) => {
